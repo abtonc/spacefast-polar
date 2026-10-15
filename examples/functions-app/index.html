@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Polar on Spacefast Functions</title>
+    <style>
+      :root { color-scheme: light dark; font: 16px/1.5 system-ui, sans-serif; }
+      body { max-width: 34rem; margin: 3rem auto; padding: 0 1.25rem; }
+      section { border: 1px solid color-mix(in srgb, currentColor 15%, transparent); border-radius: 10px; padding: 1rem 1.25rem; margin: 1rem 0; }
+      h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
+      h2 { font-size: 1rem; margin: 0 0 0.5rem; }
+      .muted { opacity: 0.7; }
+      a.button, button { display: inline-block; font: inherit; padding: 0.4rem 0.9rem; border-radius: 6px; border: 1px solid currentColor; background: none; color: inherit; text-decoration: none; cursor: pointer; }
+      input { font: inherit; padding: 0.35rem 0.5rem; }
+      pre { overflow-x: auto; font-size: 0.85rem; }
+      [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <h1>Polar on Spacefast Functions</h1>
+    <p class="muted">An example for <code>spacefast-polar</code>: checkout, the customer portal, webhooks, and a Pro-only API route.</p>
+
+    <section id="signed-out" hidden>
+      <h2>Sign in</h2>
+      <p class="muted">Demo only: any name works. Replace <code>functions/_session.ts</code> with real auth.</p>
+      <form method="post" action="/api/session">
+        <input name="name" placeholder="your-name" required pattern="[a-zA-Z0-9_\-]{2,32}" />
+        <button>Sign in</button>
+      </form>
+    </section>
+
+    <section id="signed-in" hidden>
+      <h2>Your plan</h2>
+      <p>Signed in as <code id="user"></code> · <button id="sign-out" type="button">Sign out</button></p>
+      <p id="plan" class="muted">Loading…</p>
+      <p>
+        <a class="button" id="upgrade" href="/api/polar/checkout" hidden>Upgrade to Pro</a>
+        <a class="button" id="manage" href="/api/polar/portal" hidden>Manage billing</a>
+      </p>
+    </section>
+
+    <section id="report-section" hidden>
+      <h2>Pro report</h2>
+      <pre id="report"></pre>
+    </section>
+
+    <script type="module">
+      const $ = (id) => document.getElementById(id);
+      const session = await (await fetch("/api/session")).json();
+      $("signed-out").hidden = Boolean(session);
+      $("signed-in").hidden = !session;
+
+      if (session) {
+        $("user").textContent = session.userId;
+        $("sign-out").onclick = async () => {
+          await fetch("/api/session", { method: "DELETE" });
+          location.reload();
+        };
+
+        // Right after checkout the webhook may not have landed yet, so read through to Polar once.
+        const justPaid = new URLSearchParams(location.search).get("checkout") === "success";
+        const entitlements = await (await fetch(`/api/polar/entitlements${justPaid ? "?sync=1" : ""}`)).json();
+        const pro = entitlements.subscriptions.length > 0;
+        $("plan").textContent = pro
+          ? `Pro, renews ${new Date(entitlements.subscriptions[0].currentPeriodEnd).toLocaleDateString()}`
+          : "Free";
+        $("upgrade").hidden = pro;
+        $("manage").hidden = !entitlements.customerId;
+
+        const report = await fetch("/api/report");
+        $("report-section").hidden = false;
+        $("report").textContent = report.ok ? JSON.stringify(await report.json(), null, 2) : await report.text();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "polar-functions-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "publish": "sf publish"
+  },
+  "dependencies": {
+    "spacefast-polar": "^0.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

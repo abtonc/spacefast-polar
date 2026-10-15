@@ -1,0 +1,64 @@
+{
+  "name": "spacefast-polar",
+  "version": "0.1.0",
+  "description": "Polar payments, subscriptions, and webhooks for Spacefast spaces (Functions and Zero runtimes).",
+  "license": "MIT",
+  "author": "Arda Barış Tonç",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/core/index.d.ts",
+      "default": "./dist/core/index.js"
+    },
+    "./functions": {
+      "types": "./dist/functions/index.d.ts",
+      "default": "./dist/functions/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "spacefast-polar": "./bin/spacefast-polar.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "generate": "node scripts/generate-types.ts",
+    "typecheck": "tsc -p tsconfig.json && tsc -p test/tsconfig.json",
+    "test": "vitest run",
+    "check:package": "node scripts/check-package.mjs",
+    "docs:build": "node site/build.mjs",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build && npm run check:package"
+  },
+  "keywords": [
+    "spacefast",
+    "polar",
+    "payments",
+    "subscriptions",
+    "webhooks",
+    "billing"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abtonc/spacefast-polar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/abtonc/spacefast-polar/issues"
+  },
+  "homepage": "https://sf-polar.space.fast",
+  "devDependencies": {
+    "@spacefast/zero": "^0.5.0",
+    "@spacefast/zero-compile": "^0.5.0",
+    "@types/node": "^26.6.4",
+    "standardwebhooks": "^1.1.1",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}

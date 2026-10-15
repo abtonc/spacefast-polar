@@ -1,0 +1,10 @@
+.spacefast/
+node_modules/
+dist/
+.env*
+# Vendored by `npm run vendor`; the source lives in ../../src.
+server/polar/
+.spacefast/state.json
+/.spacefast-*
+.spacefast/.spacefast-*
+.spacefast/.space-link-*.tmp

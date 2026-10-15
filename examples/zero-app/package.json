@@ -1,0 +1,17 @@
+{
+  "name": "polar-integration-test",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@spacefast/zero": "0.5.0",
+    "preact": "10.29.7"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  },
+  "scripts": {
+    "vendor": "node ../../bin/spacefast-polar.js add zero --force",
+    "dev": "sf dev",
+    "publish": "npm run vendor && sf publish"
+  }
+}
